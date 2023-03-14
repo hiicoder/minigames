@@ -18,7 +18,7 @@ public class Spawner : MonoBehaviour
 
     private void Start()
     {
-        gridSize = Random.Range(5, 11);
+        gridSize = 5;// Random.Range(5, 11);
         layout.constraintCount = gridSize;
     }
 
