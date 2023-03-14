@@ -157,9 +157,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
+  rotSpeed: 20
   verticalSpeed: 1
   amplitude: 1
   tempPosition: {x: 0, y: 0, z: 0}
+  rotation1: {x: 0, y: 0, z: 0, w: 1}
+  rotation2: {x: 0.38268346, y: 0, z: 0, w: 0.9238795}
 --- !u!114 &488909964
 MonoBehaviour:
   m_ObjectHideFlags: 0
