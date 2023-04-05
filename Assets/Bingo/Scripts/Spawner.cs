@@ -1,67 +1,55 @@
 using Photon.Pun;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Spawner : MonoBehaviour
 {
-
+    [SerializeField] GameObject layer;
     [SerializeField] Transform parent;
-    int gridSize;
-    [SerializeField] GridLayoutGroup layout;
-    List<GameObject> prefabs = new List<GameObject>();
-    public List<int> numbers = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+    [SerializeField] public GameObject child;
     [SerializeField] TMP_Text SendDataPos;
-    // Start is called before the first frame update
+    PhotonView view;
 
     private void OnEnable()
     {
         ActionHandler.ShowValue += ShowValue;
+        ActionHandler.SelfDisable += SelfDisable;
+        ActionHandler.EnableOthers += SelfEnable;
     }
 
     private void OnDisable()
     {
         ActionHandler.ShowValue -= ShowValue;
-
+        ActionHandler.SelfDisable -= SelfDisable;
+        ActionHandler.EnableOthers -= SelfEnable;
     }
-
 
     private void ShowValue(string _value)
     {
-        SendDataPos.text = _value.ToString();
+        SendDataPos.text ="Last Cut: " +    _value.ToString();
     }
 
     private void Start()
     {
-        
-        gridSize = 5;
-        layout.constraintCount = gridSize;
         GenerateGrid();
     }
 
     public void GenerateGrid()
-    {
-        for (int i = 0; i < gridSize * gridSize; i++)
-        {
-            GameObject obj =PhotonNetwork.Instantiate("1", parent.position,Quaternion.identity);
-            obj.transform.parent = parent;
-            prefabs.Add(obj);
-        }
-        SpawnGrid();    
+    {   
+        child = PhotonNetwork.Instantiate("NumberBox", parent.position, Quaternion.identity);
+        child.transform.parent = parent;     
     }
-
-    private void SpawnGrid()
+    private void SelfDisable()
     {
-        foreach (GameObject item in prefabs)
+        layer.SetActive(true);
+    }
+    private void SelfEnable(bool val)
+    {
+        Debug.Log("val1" + val);
+        if (val)
         {
-            int randomPickup = Random.Range(0, numbers.Count);
-            TMP_Text text = item.GetComponentInChildren<TMP_Text>();
-            text.text = numbers[randomPickup].ToString();
-            numbers.RemoveAt(randomPickup);
+            layer.SetActive(false);
         }
     }
-
-   
 
 }

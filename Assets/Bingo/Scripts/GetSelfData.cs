@@ -5,25 +5,31 @@ using UnityEngine;
 public class GetSelfData : MonoBehaviour
 {
     [SerializeField] TMP_Text text;
-    string number;
     [SerializeField] PhotonView photonView;
+    [SerializeField] string number;
+
     // Start is called before the first frame update
+
+    private void Start()
+    {
+        photonView = gameObject.GetComponentInParent<PhotonView>();
+    }
+
     public void OnClickSelf()
     {
         number = text.text;
         SendDatatoall();
+        SendDataToOther();
+        
     }
     public void SendDatatoall()
     {
-
-        photonView.RPC("RecivedDataToAll", RpcTarget.All,number);
+        photonView.RPC("RecivedDataToAll", RpcTarget.All, number);
     }
-    [PunRPC]
-    void RecivedDataToAll(string recivedData)
+
+    public void SendDataToOther()
     {
-        string data = recivedData;
-        ActionHandler.ShowValue?.Invoke(data);
-        Debug.Log(data);
-       // text.text = "Number To Cut : " + data;
+        photonView.RPC("RecivedDataToOther", RpcTarget.Others, true);
+        ActionHandler.SelfDisable?.Invoke();
     }
 }
