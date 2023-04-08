@@ -7,4 +7,6 @@ public static class ActionHandler
     public static Action SelfDisable;
 
     public static Action <string> PlayerTurn;
+
+    public static Action CheckResult;
 }
