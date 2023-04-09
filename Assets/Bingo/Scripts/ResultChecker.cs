@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class ResultChecker : MonoBehaviour
@@ -8,42 +7,94 @@ public class ResultChecker : MonoBehaviour
 
     SpawnGrid spawnGrid;
     int count = 0;
+    int columnCount = 0;
+    int rowCount = 0;
+    int diagonalCountLeft = 0;
+    int diagonalCountRight = 0;
+    List<int> rowArray = new List<int>();
+    List<int> colArray = new List<int>();
+    [SerializeField] GameObject winText;
+    
+
+
     private void Start()
     {
         spawnGrid = FindObjectOfType<SpawnGrid>();
     }
     private void OnEnable()
     {
-        //ActionHandler.CheckResult += CheckResult;
+        ActionHandler.CheckResult += CheckResult;
     }
 
     private void OnDisable()
     {
-       //ActionHandler.CheckResult -= CheckResult;
+       ActionHandler.CheckResult -= CheckResult;
 
     }
 
-    public void CheckResult() 
+    public void CheckResult()
     {
         CheckRow_0();
-        CheckRow_1();
-        CheckRow_2();
-        CheckRow_3();
-        CheckRow_4();
         CheckCol_0();
-        CheckCol_1();
-        CheckCol_2();
-        CheckCol_3();
-        CheckCol_4();
-       
+        if (diagonalCountLeft == 0)
+        {
+            CheckDiagonalLeft();
+            
+        }
+        if (diagonalCountRight == 0)
+        {
+            CheckDiagonalRight();
+        }
+
     }
 
     #region Row Check
     public void CheckRow_0()
     {
+        
+        for (int i = 0; i < 5; i++)
+        {
+            if (rowArray.Contains(i))
+            {
+                continue;
+            }
             for (int j = 0; j < 5; j++)
             {
-                if (spawnGrid.arrayObjects[0, j].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
+                if (spawnGrid.arrayObjects[i, j].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
+                {
+                    count++;
+                    
+                }
+                else
+                {
+                    count = 0;
+                    break;
+                }
+            }
+            if (count == 5)
+            {
+                count = 0;
+                rowArray.Add(i);
+                checkIsActive("rowCall");
+            }
+        }
+    }
+    #endregion
+
+
+    #region Col Check
+    public void CheckCol_0()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            if (colArray.Contains(i))
+            {
+                continue;
+            }
+            for (int j = 0; j < 5; j++)
+            {
+               
+                if (spawnGrid.arrayObjects[j, i].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
                 {
                     count++;
                 }
@@ -52,14 +103,89 @@ public class ResultChecker : MonoBehaviour
                     count = 0;
                     break;
                 }
+            }
+            if (count == 5)
+            {
+                count = 0;
+                colArray.Add(i);
+                checkIsActive("colCall");
+            }
+        }
+    }
+    #endregion
+
+
+    #region Diagonal Check
+
+    public void CheckDiagonalLeft()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            if (spawnGrid.arrayObjects[i, i].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
+            {
+                count++;
+            }
+            else
+            {
+                count = 0;
+                break;
+            }
         }
         if (count == 5)
         {
+            count = 0;
+            checkIsActive("diagonalCallLeft");
+        }
+    }
+    public void CheckDiagonalRight()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            if (spawnGrid.arrayObjects[i, 4 - i].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
+            {
+                count++;
+            }
+            else
+            {
+                count = 0;
+                break;
+            }
+        }
+        if (count == 5)
+        {
+            count = 0;
+            checkIsActive("diagonalCallRight");
+        }
+    }
+
+
+    #endregion
+
+
+    private void checkIsActive( string callValue)
+    {
+        if (callValue == "rowCall")
+        {
+            rowCount++;
+        }
+        else if (callValue == "colCall")
+        {
+            columnCount++;
+        }
+        else if (callValue == "diagonalCallLeft")
+        {
+            diagonalCountLeft++;
+        }
+        else if (callValue == "diagonalCallRight")
+        {
+            diagonalCountRight++;
+        }
+
             if (!bingo[0].transform.GetChild(1).gameObject.activeInHierarchy)
             {
                 bingo[0].transform.GetChild(1).gameObject.SetActive(true);
             }
-            else if(!bingo[1].transform.GetChild(1).gameObject.activeInHierarchy)
+            else if (!bingo[1].transform.GetChild(1).gameObject.activeInHierarchy)
             {
                 bingo[1].transform.GetChild(1).gameObject.SetActive(true);
             }
@@ -75,274 +201,25 @@ public class ResultChecker : MonoBehaviour
             {
                 bingo[4].transform.GetChild(1).gameObject.SetActive(true);
             }
-        }
-    }
-    public void CheckRow_1()
-    {
-        for (int j = 0; j < 5; j++)
+
+        bool val = false;
+        foreach (var item in bingo)
         {
-            if (spawnGrid.arrayObjects[1, j].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
+            
+            if (item.transform.GetChild(1).gameObject.activeInHierarchy)
             {
-                count++;
+                val = true;
             }
             else
             {
-                count = 0;
-                break;
+                val = false;
             }
         }
-        if (count == 5)
-        {
 
-            bingo[1].transform.GetChild(1).gameObject.SetActive(true);
-        }
-    }
-    public void CheckRow_2()
-    {
-        for (int j = 0; j < 5; j++)
+        if (val)
         {
-            if (spawnGrid.arrayObjects[2, j].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
-            {
-                count++;
-            }
-            else
-            {
-                count = 0;
-                break;
-            }
-        }
-        if (count == 5)
-        {
-
-            bingo[2].transform.GetChild(1).gameObject.SetActive(true);
-        }
-    }
-    public void CheckRow_3()
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            if (spawnGrid.arrayObjects[3, j].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
-            {
-                count++;
-            }
-            else
-            {
-                count = 0;
-                break;
-            }
-        }
-        if (count == 5)
-        {
-
-            bingo[3].transform.GetChild(1).gameObject.SetActive(true);
-        }
-    }
-    public void CheckRow_4()
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            if (spawnGrid.arrayObjects[3, j].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
-            {
-                count++;
-            }
-            else
-            {
-                count = 0;
-                break;
-            }
-        }
-        if (count == 5)
-        {
-
-            bingo[4].transform.GetChild(1).gameObject.SetActive(true);
+            winText.SetActive(true);
         }
     }
 
-    #endregion
-
-
-    #region Col Check
-    public void CheckCol_0()
-    {
-            for (int j = 0; j < 5; j++)
-            {
-                if (spawnGrid.arrayObjects[j, 0].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
-                {
-                    count++;
-                }
-                else
-                {
-                    count = 0;
-                    break;
-                }
-        }
-        if (count == 5)
-        {
-
-            bingo[0].transform.GetChild(1).gameObject.SetActive(true);
-        }
-    }
-    public void CheckCol_1()
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            if (spawnGrid.arrayObjects[j, 0].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
-            {
-                count++;
-            }
-            else
-            {
-                count = 0;
-                break;
-            }
-        }
-        if (count == 5)
-        {
-
-            bingo[1].transform.GetChild(1).gameObject.SetActive(true);
-        }
-    }
-    public void CheckCol_2()
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            if (spawnGrid.arrayObjects[j, 0].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
-            {
-                count++;
-            }
-            else
-            {
-                count = 0;
-                break;
-            }
-        }
-        if (count == 5)
-        {
-
-            bingo[2].transform.GetChild(1).gameObject.SetActive(true);
-        }
-    }
-    public void CheckCol_3()
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            if (spawnGrid.arrayObjects[j, 0].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
-            {
-                count++;
-            }
-            else
-            {
-                count = 0;
-                break;
-            }
-        }
-        if (count == 5)
-        {
-
-            bingo[3].transform.GetChild(1).gameObject.SetActive(true);
-        }
-    }
-    public void CheckCol_4()
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            if (spawnGrid.arrayObjects[j, 0].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
-            {
-                count++;
-            }
-            else
-            {
-                count = 0;
-                break;
-            }
-        }
-        if (count == 5)
-        {
-
-            bingo[4].transform.GetChild(1).gameObject.SetActive(true);
-        }
-    }
-
-    #endregion
-
-    /*public void PrintPattern()
-        {
-
-            if (dropdown.value == 0)
-            {
-                text.text = "";
-                HorizontalPattern();
-            }
-            if (dropdown.value == 1)
-            {
-                text.text = "";
-                VerticalPattern();
-
-            }
-            if (dropdown.value == 2)
-            {
-                text.text = "";
-                DigonalPatternRight();
-            }
-            if (dropdown.value == 3)
-            {
-                text.text = "";
-                DigonalPatternLeft();
-            }
-
-
-        }
-
-       public void HorizontalPattern()
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                text.text += "*";
-            }
-        } 
-        public void VerticalPattern()
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                text.text += "* <br>";
-            }
-        }
-        public void DigonalPatternLeft()
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                for (int j = 0; j < 5 ; j++)
-                {
-                    if (i == j)
-                    {
-                        text.text += "*";
-                    }
-                    else
-                    {
-                        text.text += "   ";
-                    }
-
-                }
-                text.text += "<br>";
-            }
-        }
-        public void DigonalPatternRight()
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                for (int j = 0; j < 5; j++)
-                {
-                    if (i + j == 4 )
-                    {
-                        text.text += "*";
-                    }
-                    else
-                    {
-                        text.text += "   ";
-                    }
-
-                }
-                text.text += "<br>";
-            }
-        }*/
 }

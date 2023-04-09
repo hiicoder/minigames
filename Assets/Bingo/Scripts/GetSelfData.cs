@@ -20,6 +20,7 @@ public class GetSelfData : MonoBehaviour
         number = text.text;
         SendDatatoall();
         SendDataToOther();
+        ActionHandler.CheckResult?.Invoke();
         
     }
     public void SendDatatoall()
