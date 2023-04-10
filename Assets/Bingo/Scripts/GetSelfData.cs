@@ -5,8 +5,8 @@ using UnityEngine;
 public class GetSelfData : MonoBehaviour
 {
     [SerializeField] TMP_Text text;
-    PhotonView photonView;
-    string number;
+    [SerializeField] PhotonView photonView;
+    [SerializeField] string number;
 
     // Start is called before the first frame update
 
