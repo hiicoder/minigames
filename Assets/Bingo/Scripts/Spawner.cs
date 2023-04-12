@@ -45,7 +45,6 @@ public class Spawner : MonoBehaviour
     }
     private void SelfEnable(bool val)
     {
-        Debug.Log("val1" + val);
         if (val)
         {
             layer.SetActive(false);

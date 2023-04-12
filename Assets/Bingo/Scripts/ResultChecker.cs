@@ -1,4 +1,6 @@
+using Photon.Pun;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ResultChecker : MonoBehaviour
@@ -13,25 +15,31 @@ public class ResultChecker : MonoBehaviour
     int diagonalCountRight = 0;
     List<int> rowArray = new List<int>();
     List<int> colArray = new List<int>();
-    [SerializeField] GameObject winText;
+    [SerializeField] TMP_Text winText;
     
-
 
     private void Start()
     {
         spawnGrid = FindObjectOfType<SpawnGrid>();
+        
     }
     private void OnEnable()
     {
         ActionHandler.CheckResult += CheckResult;
+        ActionHandler.WinORLoseText += WinLoseText;
     }
 
     private void OnDisable()
     {
        ActionHandler.CheckResult -= CheckResult;
+        ActionHandler.WinORLoseText -= WinLoseText;
 
     }
 
+   
+  
+
+    
     public void CheckResult()
     {
         CheckRow_0();
@@ -201,11 +209,15 @@ public class ResultChecker : MonoBehaviour
             {
                 bingo[4].transform.GetChild(1).gameObject.SetActive(true);
             }
+       
+    }
 
+    public void WinLoseText(string text)
+    {
         bool val = false;
         foreach (var item in bingo)
         {
-            
+
             if (item.transform.GetChild(1).gameObject.activeInHierarchy)
             {
                 val = true;
@@ -215,11 +227,13 @@ public class ResultChecker : MonoBehaviour
                 val = false;
             }
         }
-
         if (val)
         {
-            winText.SetActive(true);
+            winText.text = text;
+            ActionHandler.TextToOther?.Invoke();
         }
     }
 
+
+   
 }

@@ -85,6 +85,7 @@ public class SpawnGrid : MonoBehaviour
         string data = recivedData;
         ActionHandler.ShowValue?.Invoke(data);
         ActionHandler.PlayerTurn?.Invoke(data);
+        Debug.Log(data);
     }
 
     [PunRPC]
@@ -93,5 +94,16 @@ public class SpawnGrid : MonoBehaviour
         ActionHandler.EnableOthers?.Invoke(val);
         
     }
+    [PunRPC]
+    void CheckResultAndDisableButton()
+    {
+        ActionHandler.CheckResult?.Invoke();
+        ActionHandler.DisableButton?.Invoke();
+    }
 
+    [PunRPC]
+    void RecivedWinOrLoseText(string text)
+    {
+        ActionHandler.WinORLoseText?.Invoke(text);
+    }
 }
