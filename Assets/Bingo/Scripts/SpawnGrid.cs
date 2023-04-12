@@ -5,36 +5,38 @@ using Photon.Pun;
 
 public class SpawnGrid : MonoBehaviour
 {
-    
-    List<GameObject> prefabs = new List<GameObject>();
     [SerializeField] GameObject prefab;
-    public GameObject[,] arrayObjects = new GameObject[5,5];
+    [SerializeField] int gridSize = 5;
+    List<GameObject> prefabs = new List<GameObject>();
     public List<int> numbers = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
-    int gridSize;
+    public GameObject[,] storeDataForCheckResult = new GameObject[5,5];
     float height= 110;
     float width = -110;
-
+    PhotonView view;
 
     private void OnEnable()
     {
-       
-        ActionHandler.PlayerTurn += ActivateOrDeactivateButtons;
-
+        ActionHandler.CrossOthersNumber += ActivateOthersCrossMark;
+        ActionHandler.GetButtonValue += SendDataToOthers;
     }
 
     private void OnDisable()
     {
-        
-        ActionHandler.PlayerTurn -= ActivateOrDeactivateButtons;
+        ActionHandler.CrossOthersNumber -= ActivateOthersCrossMark;
+        ActionHandler.GetButtonValue -= SendDataToOthers;
     }
-
 
     private void Start()
     {
-        gridSize = 5;
+        view = GetComponent<PhotonView>();  
         GenerateGrid();
     }
 
+    #region Grid Generator and Shuffler
+
+    /// <summary>
+    /// Generate Grid When Game Start 
+    /// </summary>
     public void GenerateGrid()
     {
         for (int i = 0; i < gridSize; i++)
@@ -45,7 +47,7 @@ public class SpawnGrid : MonoBehaviour
                 GameObject child = Instantiate(prefab);
                 child.transform.parent = gameObject.transform;
                 prefabs.Add(child);
-                arrayObjects[i, j] = child;
+                storeDataForCheckResult[i, j] = child;
                 RectTransform rectTransform = child.GetComponent<RectTransform>();
                 rectTransform.anchoredPosition = pose;
                 width += 55;
@@ -53,10 +55,13 @@ public class SpawnGrid : MonoBehaviour
             height -= 55;
             width = -110;
         }
-        SufflGrid();
+        ShuffleGrid();
     }
 
-    private void SufflGrid()
+    /// <summary>
+    /// Shuffle the grid number 
+    /// </summary>
+    private void ShuffleGrid()
     {
         foreach (GameObject item in prefabs)
         {
@@ -67,38 +72,57 @@ public class SpawnGrid : MonoBehaviour
         }
     }
 
-    private void ActivateOrDeactivateButtons(string num)
+    #endregion
+
+
+    /// <summary>
+    /// Activate Cross mark on other players grid boxes. 
+    /// </summary>
+    /// <param name="buttonNumber">Get the Grid button number</param>
+    private void ActivateOthersCrossMark(string buttonNumber)
     {
         foreach (Transform child in gameObject.transform)
         {
-            if (num == child.GetComponentInChildren<TMP_Text>().text)
+            if (buttonNumber == child.GetComponentInChildren<TMP_Text>().text)
             {
-              child.GetChild(1).gameObject.SetActive(true);
+                child.transform.GetChild(1).gameObject.SetActive(true);
             }
         }
     }
-   
 
-    [PunRPC]
-    void RecivedDataToAll(string recivedData)
+    public void SendDataToOthers(string number)
     {
-        string data = recivedData;
-        ActionHandler.ShowValue?.Invoke(data);
-        ActionHandler.PlayerTurn?.Invoke(data);
-        Debug.Log(data);
+        view.RPC("ReceivedDataToOther", RpcTarget.Others,number);
+        view.RPC("EnableOthers", RpcTarget.All, true);
+        view.RPC("EnableOthers", RpcTarget.Others, true);
+        ActionHandler.SelfDisable?.Invoke();
+        view.RPC("CheckResult", RpcTarget.All);
     }
 
     [PunRPC]
-    void RecivedDataToOther(bool val)
+    void ReceivedDataToOther(string receivedData)
     {
+        Debug.Log(receivedData);
+        ActionHandler.CrossOthersNumber?.Invoke(receivedData);
+    }
+    [PunRPC]
+    void EnableOthers(bool val)
+    {
+        ActionHandler.DisableButton?.Invoke();
         ActionHandler.EnableOthers?.Invoke(val);
-        
     }
+
     [PunRPC]
-    void CheckResultAndDisableButton()
+    void CheckResult()
     {
         ActionHandler.CheckResult?.Invoke();
-        ActionHandler.DisableButton?.Invoke();
+    }
+
+
+    [PunRPC]
+    void OnWin()
+    {
+        ActionHandler.Onwin?.Invoke();
     }
 
     [PunRPC]

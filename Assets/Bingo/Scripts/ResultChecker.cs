@@ -68,7 +68,7 @@ public class ResultChecker : MonoBehaviour
             }
             for (int j = 0; j < 5; j++)
             {
-                if (spawnGrid.arrayObjects[i, j].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
+                if (spawnGrid.storeDataForCheckResult[i, j].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
                 {
                     count++;
                     
@@ -102,7 +102,7 @@ public class ResultChecker : MonoBehaviour
             for (int j = 0; j < 5; j++)
             {
                
-                if (spawnGrid.arrayObjects[j, i].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
+                if (spawnGrid.storeDataForCheckResult[j, i].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
                 {
                     count++;
                 }
@@ -129,7 +129,7 @@ public class ResultChecker : MonoBehaviour
     {
         for (int i = 0; i < 5; i++)
         {
-            if (spawnGrid.arrayObjects[i, i].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
+            if (spawnGrid.storeDataForCheckResult[i, i].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
             {
                 count++;
             }
@@ -149,7 +149,7 @@ public class ResultChecker : MonoBehaviour
     {
         for (int i = 0; i < 5; i++)
         {
-            if (spawnGrid.arrayObjects[i, 4 - i].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
+            if (spawnGrid.storeDataForCheckResult[i, 4 - i].gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
             {
                 count++;
             }
@@ -209,7 +209,8 @@ public class ResultChecker : MonoBehaviour
             {
                 bingo[4].transform.GetChild(1).gameObject.SetActive(true);
             }
-       
+            ActionHandler.WinORLoseText?.Invoke("You Win :)");
+
     }
 
     public void WinLoseText(string text)
@@ -230,7 +231,7 @@ public class ResultChecker : MonoBehaviour
         if (val)
         {
             winText.text = text;
-            ActionHandler.TextToOther?.Invoke();
+            
         }
     }
 

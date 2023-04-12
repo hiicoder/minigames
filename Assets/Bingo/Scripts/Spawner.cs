@@ -12,22 +12,22 @@ public class Spawner : MonoBehaviour
 
     private void OnEnable()
     {
-        ActionHandler.ShowValue += ShowValue;
+       // ActionHandler.ShowValue += ShowValue;
         ActionHandler.SelfDisable += SelfDisable;
         ActionHandler.EnableOthers += SelfEnable;
     }
 
     private void OnDisable()
     {
-        ActionHandler.ShowValue -= ShowValue;
+       // ActionHandler.ShowValue -= ShowValue;
         ActionHandler.SelfDisable -= SelfDisable;
         ActionHandler.EnableOthers -= SelfEnable;
     }
 
-    private void ShowValue(string _value)
+  /*  private void ShowValue(string _value)
     {
         SendDataPos.text ="Last Cut: " +    _value.ToString();
-    }
+    }*/
 
     private void Start()
     {

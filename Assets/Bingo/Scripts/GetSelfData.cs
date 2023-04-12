@@ -23,37 +23,29 @@ public class GetSelfData : MonoBehaviour
     {
         ActionHandler.DisableButton += DisableButtonClick;
         ActionHandler.TextToOther += Lose;
+        ActionHandler.Onwin += DisableAllButtonOnWin;
     }
-
-    
-
     private void OnDisable()
     {
         ActionHandler.DisableButton -= DisableButtonClick;
         ActionHandler.TextToOther -= Lose;
-
+        ActionHandler.Onwin += DisableAllButtonOnWin;
     }
 
+    /// <summary>
+    /// Button Click function 
+    /// Its sends the number which is crossed to others. 
+    /// </summary>
     public void OnClickSelf()
     {
         number = text.text;
-        SendDatatoall();
-        SendDataToOther();
-    }
-    public void SendDatatoall()
-    {
-        photonView.RPC("RecivedDataToAll", RpcTarget.All, number);
-        photonView.RPC("CheckResultAndDisableButton", RpcTarget.All);
-    }
-
-    public void SendDataToOther()
-    {
-        photonView.RPC("RecivedDataToOther", RpcTarget.Others, true);
-        ActionHandler.SelfDisable?.Invoke();
-
+        ActionHandler.GetButtonValue.Invoke(number);
     }
 
 
+    /// <summary>
+    /// Make the button Non-interactable when Clicked
+    /// </summary>
     public void DisableButtonClick()
     {
         if (gameObject.transform.GetChild(1).gameObject.activeInHierarchy)
@@ -61,9 +53,13 @@ public class GetSelfData : MonoBehaviour
             gameObject.GetComponent<Button>().interactable = false;
         }
     }
+
+    public void DisableAllButtonOnWin()
+    {
+        gameObject.GetComponent<Button>().interactable = false;
+    }
     private void Lose()
     {
-        ActionHandler.WinORLoseText?.Invoke("You Win :)");
         photonView.RPC("RecivedWinOrLoseText", RpcTarget.Others, "You lose :(");
     }
 

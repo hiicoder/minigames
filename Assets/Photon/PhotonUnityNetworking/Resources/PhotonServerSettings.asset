@@ -47,6 +47,10 @@ MonoBehaviour:
   - CheckResultCall
   - CheckResultAndDisableButton
   - RecivedWinOrLoseText
+  - OnWin
+  - ReceivedDataToAll
+  - ReceivedDataToOther
+  - EnableOthers
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
